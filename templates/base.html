@@ -15,19 +15,14 @@
 
     <script src="{% static 'alpine.js.gz' %}" defer></script>
     <script src="{% static 'htmx.min.js.gz' %}" defer></script>
-    {% comment %}
-    <script src="{% static 'echarts.min.js.gz' defer %}"></script>
-    {% endcomment %}
     <script src="{% static 'apexcharts.js.gz' defer %}"></script>
-    {% comment %}
-    <script src="{% static 'chart.js.gz' defer %}"></script>
-    {% endcomment %}
   </head>
 
   <body>
     {% block content %} {% endblock content %}
   </body>
   <footer>
+    <br />
     <p>© 2024 Sistemas - Rioplatense - Logger Temperaturas</p>
   </footer>
 </html>
