@@ -32,10 +32,10 @@ class Umbrales(models.Model):
 
 
 class Registros(models.Model):
-    ts = models.DateTimeField()
-    tipo = models.CharField()
-    ix = models.SmallIntegerField()
-    temp = models.DecimalField(max_digits=3, decimal_places=1)
+    ts = models.DateTimeField(primary_key=True, verbose_name="Fecha y hora")
+    tipo = models.CharField(max_length=1, verbose_name="Tipo")
+    ix = models.SmallIntegerField(verbose_name="Canal")
+    temp = models.DecimalField(max_digits=3, decimal_places=1, verbose_name="Temperatura")
 
     class Meta:
         managed = False

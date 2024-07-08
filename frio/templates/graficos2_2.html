@@ -1,0 +1,64 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12" style="height: 90vh">
+      <div id="chart"></div>
+    </div>
+  </div>
+</div>
+
+{{ series | json_script:"ser_data" }}
+
+<script type="text/javascript">
+  const ser = JSON.parse(document.getElementById('ser_data').textContent);
+  var options = {
+      chart: {
+          type: 'line',
+          animations: {
+              enabled: false,
+          },
+          height: '100%',
+
+      },
+      title: {
+          text: 'Temperatura'
+      },
+      legend: {
+          show: true,
+          position: 'top',
+          showForSingleSeries: true
+      },
+      xaxis: {
+          type: 'datetime',
+      },
+      series: [],
+
+      {% comment %} {{ data.items | safe }}, {% endcomment %}
+      tooltip: {
+          enabled: true,
+          x: {
+              show: true,
+              format: 'dd MMM  HH:mm',
+          },
+      }
+  };
+
+  var chart = new ApexCharts(document.getElementById("chart"), options);
+
+  chart.render();
+
+  fetch('/series/')
+      .then(response => response.json())
+      .then(data => {
+          chart.updateSeries(data.series, false);
+      });
+
+  {% comment %} chart.updateSeries([ser[0]], false); {% endcomment %}
+      {% comment %}
+      name: 'Temperatura',
+      data: data.items,
+  }]);
+   {% endcomment %}
+</script>
+{% endblock %}

@@ -9,6 +9,7 @@ environs = {extras = ["django"], version = "*"}
 psycopg2 = "*"
 django-browser-reload = "*"
 django-debug-toolbar = "*"
+django-template-partials = "*"
 
 [dev-packages]
 

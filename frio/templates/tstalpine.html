@@ -1,0 +1,64 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+
+<div x-data>
+  <select x-model="$store.alex.selectedOption">
+    <option value="">Select an option</option>
+    <template x-for="option in $store.alex.options">
+      <option
+        :key="option.value"
+        :value="option.value"
+        x-text="option.text"
+      ></option>
+    </template>
+  </select>
+  <button @click="$store.alex.fetchData()">Fetch</button>
+
+  <br />
+  <div x-data="{ title: 'Hello', titles:'?' }">
+    <span x-text="title"></span><br />
+    <span x-text="titles"></span><br />
+    <span x-model="title">
+      <button @click="$dispatch('input', 'Hello World!')">Click me</button>
+      <!-- After the button is pressed, `x-model` will catch the bubbling "input" event, and update title. -->
+    </span>
+  </div>
+</div>
+<script>
+  document.addEventListener('alpine:init', () => {
+    Alpine.store('alex', {
+      message: 'Hello world',
+      selectedOption: '',
+      options: [
+        {
+          value: 'bacon',
+          text: 'Bacon',
+        },
+        {
+          value: 'ham',
+          text: 'Ham',
+        },
+      ],
+      fetchData() {
+        console.log(this.selectedOption);
+
+        this.options.push({
+          value: 'new',
+          text: 'New',
+        });
+      },
+    });
+  });
+  setTimeout(() => {
+    console.log('Hello world after 3000ms');
+    Alpine.store('alex').options.push({
+      value: 'new from outside',
+      text: 'New from outside',
+    });
+  }, 3000);
+</script>
+
+{% comment %} function page() { odata = { message: 'Hello world',
+selectedOption: '', options: [ { value: 'bacon', text: 'Bacon', }, { value:
+'ham', text: 'Ham', }, ], fetchData() { console.log(this.selectedOption);
+this.options.push({ value: 'new', text: 'New', }); }, }; window.odata = odata;
+return odata; }; {% endcomment %} {% endblock %}

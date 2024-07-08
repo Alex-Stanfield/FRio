@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+  <h1>Gráficos</h1>
+
+    {% for k, v in data.items %}
+    {% comment %} {% for i in canales %} {% endcomment %}
+        <p>Canal {{ k }} -- {{ v.ts | length }} </p>
+
+        
+        <canvas id="chan-{{k}}" style="width: 95%;height:80vh;"></canvas>
+        
+        
+        <script type="text/javascript">
+            var options = {
+                type: 'line',
+                data: {
+                    labels: {{ v.ts | safe }},
+                    datasets: [{
+                        label: 'Temperatura',
+                        data: {{ v.temp }},
+                        fill: false,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            };
+
+            var chart = new Chart(document.getElementById("chan-{{k}}"), options);
+
+        </script>
+    {% endfor %}
+{% endblock %}

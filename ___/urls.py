@@ -25,7 +25,7 @@ from django.views.generic import RedirectView, TemplateView
 #
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("__reload__/", include("django_browser_reload.urls")),
+    path("", include("frio.urls"), name="landing"),
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
     path("2/", TemplateView.as_view(template_name="j/home2.html"), name="home"),
     path("d/", TemplateView.as_view(template_name="homed.html"), name="home"),
@@ -36,5 +36,7 @@ urlpatterns = [
         ),
         name="home",
     ),
+    # para sacar al pasar a prodcuccion
+    path("__reload__/", include("django_browser_reload.urls")),
     re_path(r"^favicon\.ico$", RedirectView.as_view(url=staticfiles_storage.url("/images/favicon.ico"))),
 ]

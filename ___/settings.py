@@ -33,12 +33,13 @@ SECRET_KEY = env.str("SECRET_KEY", "django-insecure-d4s_9e*0!x+y!-9n_quem+#kp+f$
 DEBUG = env.bool("DEBUG", default=False)
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*", "localhost"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "template_partials",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -76,6 +77,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            "builtins": ["template_partials.templatetags.partials"],
         },
     },
 ]

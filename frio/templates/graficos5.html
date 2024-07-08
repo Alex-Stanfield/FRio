@@ -1,0 +1,141 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+
+<div x-data class="container">
+  <div class="row flex justify-center">
+    <select
+      x-model="$store.alex.canalElegido"
+      @change="$store.alex.chgCanal()"
+      {%
+      comment
+      %}
+      x-bind:selectedIndex="$store.alex.canalElegido"
+      {%
+      endcomment
+      %}
+      autofocus
+      name="canal"
+    >
+      <template x-for="option in $store.alex.canales">
+        <option
+          :key="option.value"
+          :value="option.value"
+          x-text="option.text"
+        ></option>
+      </template>
+    </select>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12" style="height: 90vh">
+      <div id="chart-temp"></div>
+      <div id="chart-zoom" style="min-height: 100px"></div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+    function initialLoad() {
+      fetch('/series/')
+      .then((response) => response.json())
+      .then((pdata) => {
+          {% comment %} data = pdata; {% endcomment %}
+          {% comment %} canales = data.chans; {% endcomment %}
+
+          Alpine.store('alex').series = pdata.series;
+          Alpine.store('alex').canales = pdata.canales.map((item, index) => ({value: index, text: item}));
+          Alpine.store('alex').canalElegido = 0;
+          Alpine.store('alex').chgCanal();
+
+      })
+    };
+
+  document.addEventListener('alpine:init', () => {
+      Alpine.store('alex', {
+
+          canalElegido: '',
+          canales: [],  //value: ordinal del array, text: nombre del canal, canal: columna 'ix' en la tabla
+          series: [], //array con los datos de la serie
+          chgCanal() {
+              chart_temp.updateSeries([this.series[this.canalElegido]], false);
+              chart_zoom.updateSeries([this.series[this.canalElegido]], false);
+          },
+      });
+      initialLoad();
+  });
+
+  var options_temp = {
+      chart: {
+          id: 'temps',
+      type: 'line',
+      animations: {
+          enabled: false,
+      },
+      height: '80%',
+      toolbar: {
+          autoSelected: 'pan',
+          show: false
+      }
+
+      },
+      {% comment %} title: {
+      text: 'Temperatura',
+      }, {% endcomment %}
+      legend: {
+      show: false,
+      position: 'top',
+      showForSingleSeries: true,
+      },
+      xaxis: {
+      type: 'datetime',
+      },
+      series: [],
+      tooltip: {
+      enabled: true,
+      x: {
+          show: true,
+          format: 'dd MMM  HH:mm',
+      },
+      },
+  };
+
+  var options_zoom = {
+      chart: {
+          id: 'zoom',
+      type: 'area',
+      animations: {
+          enabled: false,
+      },
+      height: '20%',
+      brush:{
+          target: 'temps',
+          enabled: true
+      },
+      selection: {
+          enabled: true,
+          xaxis: {
+          min: new Date('2024-07-05').getTime(),
+          max: new Date().getTime() - (3*3600000)
+          }
+      },
+      },
+
+      legend: {
+      show: false,
+      position: 'top',
+      showForSingleSeries: false,
+      },
+      xaxis: {
+      type: 'datetime',
+      tooltip: {enabled: false}
+      },
+      series: [],
+  };
+
+  var chart_temp = new ApexCharts(document.getElementById('chart-temp'), options_temp);
+  chart_temp.render();
+
+  var chart_zoom = new ApexCharts(document.getElementById('chart-zoom'), options_zoom);
+  chart_zoom.render();
+</script>
+{% endblock %}

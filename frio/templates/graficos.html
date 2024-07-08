@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+  <h1>Gráficos</h1>
+
+    {% for k, v in data.items %}
+    {% comment %} {% for i in canales %} {% endcomment %}
+        <p>Canal {{ k }} -- {{ v.ts | length }} </p>
+
+        
+        <div id="chan-{{k}}" style="width: 95%;height:80vh;"></div>
+        
+        
+        <script type="text/javascript">
+            var myChart = echarts.init(document.getElementById('chan-{{k}}'));
+            var option = {
+                title: {
+                    text: 'Temperatura - Canal {{ k }}'
+                },
+                {% comment %} 
+                
+                tooltip: {},
+                legend: {
+                    data:['Temperatura']
+                }, 
+                
+                {% endcomment %}
+                
+                yAxis: {},
+                xAxis: {
+                    {% comment %} type: 'time', {% endcomment %}
+                    data: {{ v.ts | safe}},
+                    axisLabel: { alignWithLabel: true,
+                                interval: 5,
+                                rotate: 45,
+                                showMaxLabel: true }
+                },
+                series: [{
+                    name: 'Temperatura',
+                    type: 'line',
+                    data: {{v.temp }}
+                }]
+            };
+            myChart.setOption(option);
+        </script>
+    {% endfor %}
+{% endblock %}

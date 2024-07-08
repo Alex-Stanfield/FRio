@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+  <h1>Gráficos</h1>
+
+    {% for k, v in data.items %}
+    {% comment %} {% for i in canales %} {% endcomment %}
+        <p>Canal {{ k }} -- {{ v.ts | length }} </p>
+
+        
+        <div id="chan-{{k}}" ></div>
+        
+        
+        <script type="text/javascript">
+            var options = {
+                chart: {
+                    type: 'line',
+                    animations: {
+                        enabled: false,
+                        }
+                },
+                title: {
+                    text: 'Temperatura - Canal {{ k }}'
+                },
+
+               
+                yAxis: {},
+                
+                xaxis: {
+                    type: 'datetime', 
+                },
+                
+                series: [{
+                    name: 'Temperatura',
+                    type: 'line',
+                    data: {{v.data }}
+                }],
+                tooltip: {
+                    enabled: true,
+                    {% comment %} enabledOnSeries: undefined, {% endcomment %}
+                    {% comment %} shared: true, {% endcomment %}
+                    {% comment %} followCursor: false, {% endcomment %}
+                    {% comment %} intersect: false, {% endcomment %}
+                    {% comment %} inverseOrder: false, {% endcomment %}
+                    {% comment %} custom: undefined, {% endcomment %}
+                    {% comment %} hideEmptySeries: true, {% endcomment %}
+                    {% comment %} fillSeriesColor: false, {% endcomment %}
+                    {% comment %} theme: false, {% endcomment %}
+                    {% comment %} style: {
+                      fontSize: '12px',
+                      fontFamily: undefined
+                    }, {% endcomment %}
+                    {% comment %} onDatasetHover: {
+                        highlightDataSeries: false,
+                    }, {% endcomment %}
+                    x: {
+                        show: true,
+                        format: 'dd MMM  HH:mm',
+                        {% comment %} formatter: undefined, {% endcomment %}
+                    },
+                }
+            };
+
+            var chart = new ApexCharts(document.getElementById("chan-{{k}}"), options);
+
+            chart.render();
+        </script>
+    {% endfor %}
+{% endblock %}

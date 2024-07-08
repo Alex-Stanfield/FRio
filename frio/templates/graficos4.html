@@ -1,0 +1,81 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+
+<div
+  class="container"
+  x-data="{data:{}, canales:[1,2,3], canal:2}"
+  x-effect="console.log(canal)"
+>
+  <div class="row justify-center">
+    <select x-model="canal" class="center">
+      <template x-for="canal in canales">
+        <option x-text="canal"></option>
+      </template>
+    </select>
+  </div>
+  <div class="row justify-center">
+    <input x-model="canal"></input>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12" style="height: 90vh">
+      <div id="chart"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+
+        fetch('/series/')
+        .then((response) => response.json())
+        .then((pdata) => {
+          data = pdata;
+          {% comment %} canales = data.chans; {% endcomment %}
+    
+          chart.updateSeries([data.series[0]], false);
+           
+        });
+
+
+
+      var options = {
+        chart: {
+          type: 'line',
+          animations: {
+            enabled: false,
+          },
+          height: '100%',
+        },
+        title: {
+          text: 'Temperatura',
+        },
+        legend: {
+          show: true,
+          position: 'top',
+          showForSingleSeries: true,
+        },
+        xaxis: {
+          type: 'datetime',
+        },
+        series: [],
+        tooltip: {
+          enabled: true,
+          x: {
+            show: true,
+            format: 'dd MMM  HH:mm',
+          },
+        },
+      };
+
+      var chart = new ApexCharts(document.getElementById('chart'), options);
+
+      chart.render();
+
+      {% comment %} fetch('/series/')
+        .then((response) => response.json())
+        .then((pdata) => {
+          data = pdata;
+          chart.updateSeries(data.series, false);
+        });
+    } {% endcomment %}
+  </script>
+</div>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+
+<div
+  class="container"
+  x-data="{data:{}, canales:[1,2,3], canal:2}"
+  x-effect="console.log(canal)"
+>
+
+<div x-data="{ number: 5 }">
+    <div x-data="{ count: 0 }" x-modelable="count" x-model="number">
+        <button @click="count++" x-text="number"></button>
+    </div>
+ 
+    Number: <span x-text="number"></span>
+</div>
+
+
+<div class="row justify-center">
+    <select x-model="canal" class="center">
+      <template x-for="canal in canales" :key="canal">
+        <option :value="canal" x-text="canal">super opcion</option>
+      </template>
+    </select>
+  </div>
+  <div class="row justify-center">
+    <input x-model="canal"></input>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12" style="height: 90vh">
+      <div id="chart-temp"></div>
+      <div id="chart-zoom" style="min-height:100px;"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+
+        fetch('/series/')
+        .then((response) => response.json())
+        .then((pdata) => {
+          data = pdata;
+          {% comment %} canales = data.chans; {% endcomment %}
+    
+          chart_temp.updateSeries([data.series[0]], false);
+          chart_zoom.updateSeries([data.series[0]], false);
+           
+        });
+
+
+
+      var options_temp = {
+        chart: {
+            id: 'temps',
+          type: 'line',
+          animations: {
+            enabled: false,
+          },
+          height: '80%',
+          toolbar: {
+            autoSelected: 'pan',
+            show: false
+          }
+
+        },
+        title: {
+          text: 'Temperatura',
+        },
+        legend: {
+          show: true,
+          position: 'top',
+          showForSingleSeries: true,
+        },
+        xaxis: {
+          type: 'datetime',
+        },
+        series: [],
+        tooltip: {
+          enabled: true,
+          x: {
+            show: true,
+            format: 'dd MMM  HH:mm',
+          },
+        },
+      };
+
+      var options_zoom = {
+        chart: {
+            id: 'zoom',
+          type: 'area',
+          animations: {
+            enabled: false,
+          },
+          height: '20%',
+          brush:{
+            target: 'temps',
+            enabled: true
+          },
+          selection: {
+            enabled: true,
+            xaxis: {
+              min: new Date('2024-07-05').getTime(),
+              max: new Date().getTime() - (3*3600000)
+            }
+          },
+        },
+        
+        legend: {
+          show: false,
+          position: 'top',
+          showForSingleSeries: false,
+        },
+        xaxis: {
+          type: 'datetime',
+          tooltip: {enabled: false}
+        },
+        series: [],
+      };
+
+      var chart_temp = new ApexCharts(document.getElementById('chart-temp'), options_temp);
+      chart_temp.render();
+
+      var chart_zoom = new ApexCharts(document.getElementById('chart-zoom'), options_zoom);
+      chart_zoom.render();
+
+
+      {% comment %} fetch('/series/')
+        .then((response) => response.json())
+        .then((pdata) => {
+          data = pdata;
+          chart.updateSeries(data.series, false);
+        });
+    } {% endcomment %}
+  </script>
+</div>
+{% endblock %}
