@@ -9,6 +9,7 @@ class Camaras(models.Model):
     ix = models.SmallIntegerField(primary_key=True, verbose_name="Canal")
     name = models.CharField(max_length=15, default="LIBRE", verbose_name="Nombre")
     desc = models.TextField(max_length=100, default="", verbose_name="Descripcion")
+    show = models.BooleanField(default=True, verbose_name="Mostrar")
 
     def __str__(self):
         return f"{self.ix:2} - {self.name} - {self.desc[:20]}"
@@ -39,4 +40,4 @@ class Registros(models.Model):
 
     class Meta:
         managed = False
-        db_table = "registros"
+        db_table = "vregistros"

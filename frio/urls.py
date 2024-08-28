@@ -1,5 +1,6 @@
-# ---> move to views.py when finished ---------------------------------------------------
+# ---> move to views.py when finished ------------------------------------------------
 from datetime import datetime, timedelta
+from math import e
 
 from django.shortcuts import render
 from django.urls import path
@@ -116,16 +117,29 @@ def jsontemps(request):
     # if not request.user.is_authenticated:
     #     return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
 
-    chans = Camaras.objects.all()
-    # canales = [x.__str__() for x in chans]
-    canales = {x.ix: x.__str__() for x in chans}
+    # parse b=iso date and e=iso date
+    beg_ts = request.GET.get(
+        "b", datetime.today().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
+    )
+    end_ts = request.GET.get("e", datetime.now())
+
+    if beg_ts > end_ts:
+        beg_ts, end_ts = end_ts, beg_ts
+
+    # chans = Camaras.objects.all()
+    # chans = Camaras.objects.filter(show__exact=True)
+    # canales = {x.ix: x.__str__() for x in chans}
+    
+    canales = {x.ix: x.__str__() for x in Camaras.objects.filter(show = True)}
 
     # canales_con_datos = Registros.objects.all().order_by("ts")
-    temps = Registros.objects.filter(ts__gte="2024-07-04 00:00:00").filter(tipo__exact="T")  # .order_by("ix", "ts")
-    # viene ordenado por ts, ix
+    # temps = Registros.objects.filter(ts__gte="2024-07-08 00:00:00").filter(tipo__exact="T")  # .order_by("ix", "ts")
+    # temps = Registros.objects.filter(tipo__exact="T", ts__range=(beg_ts.isoformat(), end_ts.isoformat()))
+    
+    temps = Registros.objects.filter(ts__range=(beg_ts.isoformat(), end_ts.isoformat())) # la vista solo trae las temperaturas
+    # el orden no importa, se ordena abajo
 
-    # chans = set()
-    # series = [ { name: x, data:[] } for x in chans]
+    # para ApexCharts ==> series = [ { name: x, data:[] } for x in chans]
     dser = {}
     for r in temps:
         if r.ix not in dser:
@@ -137,6 +151,8 @@ def jsontemps(request):
 
     data = {
         "canales": [canales[i] for i in canales_keys],
+        "beg_ts": int((beg_ts - timedelta(hours=3)).timestamp() * 1000),
+        "end_ts": int((end_ts - timedelta(hours=3)).timestamp() * 1000),
         # "canales": canales_keys,
         # "labels": [f"Temperaturas canal {k}" for k in dser.keys()],
         "series": [dser[i] for i in canales_keys],
